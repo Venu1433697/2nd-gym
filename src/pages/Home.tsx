@@ -1,5 +1,6 @@
 import React from 'react';
-import { useEffect, useRef } from 'react';
+import dumbbellCursorImg from '../assets/dumbbell-cursor.png';
+import { useEffect } from 'react';
 import { Play, ArrowRight, Award, Users, Clock, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -8,7 +9,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     const cursor = document.getElementById('dumbbell-cursor');
     if (!cursor) return;
-    const moveCursor = (e) => {
+    const moveCursor = (e: MouseEvent) => {
       cursor.style.left = `${e.clientX - 20}px`;
       cursor.style.top = `${e.clientY - 20}px`;
     };
@@ -38,15 +39,18 @@ const Home: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+  <>
       {/* Custom Dumbbell Cursor */}
-      <div id="dumbbell-cursor" style={{position: 'fixed', left: 0, top: 0, pointerEvents: 'none', zIndex: 9999, width: 40, height: 40, transition: 'transform 0.15s', transform: 'scale(1)'}}>
-        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="18" width="20" height="4" rx="2" fill="#6366F1" />
-          <rect x="6" y="16" width="4" height="8" rx="2" fill="#A3E635" />
-          <rect x="30" y="16" width="4" height="8" rx="2" fill="#A3E635" />
-        </svg>
+      <div id="dumbbell-cursor" style={{position: 'fixed', left: 0, top: 0, pointerEvents: 'none', zIndex: 9999, width: 80, height: 80, transition: 'transform 0.15s', transform: 'scale(1)'}}>
+        <img src={dumbbellCursorImg} alt="Dumbbell Cursor" style={{width: '80px', height: '80px', objectFit: 'contain', animation: 'dumbbell-rotate 5s linear infinite'}} />
       </div>
+      <style>{`
+        @keyframes dumbbell-rotate {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+      <div className="min-h-screen">
         {/* Social Media Icon Bar */}
         <div className="fixed top-1/2 right-4 -translate-y-1/2 z-50 flex flex-col">
           <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="bg-blue-600 hover:bg-blue-700 text-white w-12 h-12 flex items-center justify-center shadow-lg transition-all">
@@ -219,31 +223,8 @@ const Home: React.FC = () => {
           </div>
         </section>
     </div>
+  </>
   );
 };
 
 export default Home;
-// Dumbbell cursor logic
-useEffect(() => {
-  const cursor = document.getElementById('dumbbell-cursor');
-  if (!cursor) return;
-  const moveCursor = (e) => {
-    cursor.style.transform = `translate(${e.clientX - 20}px, ${e.clientY - 20}px)`;
-  };
-  const shrinkCursor = () => {
-    cursor.style.transform += ' scale(0.6)';
-  };
-  const restoreCursor = () => {
-    cursor.style.transform = cursor.style.transform.replace(' scale(0.6)', '');
-  };
-  document.addEventListener('mousemove', moveCursor);
-  document.addEventListener('mousedown', shrinkCursor);
-  document.addEventListener('mouseup', restoreCursor);
-  document.body.style.cursor = 'none';
-  return () => {
-    document.removeEventListener('mousemove', moveCursor);
-    document.removeEventListener('mousedown', shrinkCursor);
-    document.removeEventListener('mouseup', restoreCursor);
-    document.body.style.cursor = '';
-  };
-}, []);

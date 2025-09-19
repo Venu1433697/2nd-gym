@@ -35,8 +35,6 @@ const Gallery: React.FC = () => {
       document.body.style.cursor = '';
     };
   }, []);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState('All');
 
   const galleryItems = [
     {
@@ -113,6 +111,8 @@ const Gallery: React.FC = () => {
     }
   ];
 
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const categories = ['All', 'Equipment', 'Training', 'Classes', 'Facilities'];
 
   const filteredItems = galleryItems.filter(item => 
@@ -130,14 +130,6 @@ const Gallery: React.FC = () => {
           top: 0,
           pointerEvents: 'none',
           zIndex: 9999,
-          width: 72,
-          height: 72,
-          borderRadius: '50%',
-          background: 'black',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
           transition: 'transform 0.15s',
         }}
       >

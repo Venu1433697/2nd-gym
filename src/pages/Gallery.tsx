@@ -2,6 +2,80 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Play, Image as ImageIcon } from 'lucide-react';
 // import arrowWhite from '../assets/arrow-white.svg';
 
+// AnimatedArrow component
+const AnimatedArrow: React.FC = () => {
+  const arrowRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let start: number | null = null;
+    let animationFrame: number;
+    let running = false;
+    const duration = 2000; // 2 seconds for one animation
+    const radius = 180; // radius of half-circle
+    const centerY = 120; // vertical center of the path
+    const leftX = 60; // leftmost x
+    const rightX = 420; // rightmost x
+
+    function animateArrow(timestamp: number) {
+      if (!start) start = timestamp;
+      const elapsed = timestamp - start;
+      const t = Math.min(elapsed / duration, 1); // progress 0 to 1
+      // Straight line: x from leftX to rightX, y stays at centerY
+      const x = leftX + (rightX - leftX) * t;
+      const y = centerY;
+      if (containerRef.current && arrowRef.current) {
+        containerRef.current.style.left = `${x}px`;
+        containerRef.current.style.top = `${y}px`;
+        arrowRef.current.style.transform = `rotate(0deg)`;
+      }
+      if (t < 1) {
+        animationFrame = requestAnimationFrame(animateArrow);
+      } else {
+        running = false;
+      }
+    }
+
+    function startAnimation() {
+      if (!running) {
+        running = true;
+        start = null;
+        animationFrame = requestAnimationFrame(animateArrow);
+      }
+    }
+
+    const interval = setInterval(startAnimation, 5000);
+    // Start immediately
+    startAnimation();
+
+    return () => {
+      clearInterval(interval);
+      cancelAnimationFrame(animationFrame);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        position: 'fixed',
+        left: 60,
+        top: 120,
+        zIndex: 9998,
+        pointerEvents: 'none',
+        transition: 'none',
+      }}
+    >
+      <img
+        ref={arrowRef}
+        src="https://res.cloudinary.com/dlvammive/image/upload/v1758304306/arrows-removebg-preview_qrphnk.png"
+        alt="Animated Arrow"
+        style={{ height: 80 }}
+      />
+    </div>
+  );
+};
+
 const Gallery: React.FC = () => {
   // Custom cursor logic
   const cursorRef = useRef<HTMLDivElement>(null);
@@ -140,6 +214,11 @@ const Gallery: React.FC = () => {
           style={{ height: 105, transition: 'transform 0.15s' }}
         />
       </div>
+      {/* Animated Arrow (Half-Circular Path) */}
+      <AnimatedArrow />
+
+      {/* Animated Arrow (Half-Circular Path) */}
+      <AnimatedArrow />
       {/* Gallery Page Content */}
       <div className="min-h-screen py-8">
   {/* ...existing code... */}

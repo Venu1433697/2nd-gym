@@ -1,7 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Play, Image as ImageIcon } from 'lucide-react';
+// import arrowWhite from '../assets/arrow-white.svg';
 
 const Gallery: React.FC = () => {
+  // Custom cursor logic
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const arrowRef = useRef<HTMLImageElement>(null);
+  const lastPos = useRef<{x: number, y: number} | null>(null);
+  const lastAngle = useRef<number>(0);
+  useEffect(() => {
+    const cursor = cursorRef.current;
+    const arrow = arrowRef.current;
+    if (!cursor || !arrow) return;
+    const moveCursor = (e: MouseEvent) => {
+      cursor.style.left = `${e.clientX - 24}px`;
+      cursor.style.top = `${e.clientY - 24}px`;
+      if (lastPos.current) {
+        const dx = e.clientX - lastPos.current.x;
+        const dy = e.clientY - lastPos.current.y;
+        if (dx !== 0 || dy !== 0) {
+          const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+          arrow.style.transform = `rotate(${angle}deg)`;
+          lastAngle.current = angle;
+        } else {
+          arrow.style.transform = `rotate(${lastAngle.current}deg)`;
+        }
+      }
+      lastPos.current = {x: e.clientX, y: e.clientY};
+    };
+    document.addEventListener('mousemove', moveCursor);
+    document.body.style.cursor = 'none';
+    return () => {
+      document.removeEventListener('mousemove', moveCursor);
+      document.body.style.cursor = '';
+    };
+  }, []);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
 
@@ -87,8 +120,37 @@ const Gallery: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen py-8">
-      {/* Hero Section */}
+    <>
+      {/* Custom Cursor */}
+      <div
+        ref={cursorRef}
+        style={{
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          pointerEvents: 'none',
+          zIndex: 9999,
+          width: 72,
+          height: 72,
+          borderRadius: '50%',
+          background: 'black',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+          transition: 'transform 0.15s',
+        }}
+      >
+        <img
+          ref={arrowRef}
+          src="https://res.cloudinary.com/dlvammive/image/upload/v1758304306/arrows-removebg-preview_qrphnk.png"
+          alt="Arrow"
+          style={{ height: 105, transition: 'transform 0.15s' }}
+        />
+      </div>
+      {/* Gallery Page Content */}
+      <div className="min-h-screen py-8">
+  {/* ...existing code... */}
       <section className="py-20 bg-gradient-to-br from-gray-800 to-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -268,7 +330,7 @@ const Gallery: React.FC = () => {
         </div>
       )}
     </div>
+    </>
   );
-};
-
+}
 export default Gallery;
